@@ -18,7 +18,9 @@ $eventManager->addEventHandler(
 
 class CSolopovSergeyDzenPushAndPullForGuest
 {
-    const MODULE_ID = 'bxmaker.authuserphone';
+
+    // нужно заменить на свое значение
+    const MODULE_ID = 'main';
 
     public static function pullOnGetDependentModule()
     {
@@ -32,6 +34,10 @@ class CSolopovSergeyDzenPushAndPullForGuest
     public static function mainOnProlog()
     {
         global $USER;
+
+        //сразу подключим библиотеку для клиентской стороны,
+        // можно перенести в header.php шаблона сайта
+        \Bitrix\Main\UI\Extension::load('pull.client');
 
         // проверим чтобы еще не был определен
         if (defined('PULL_USER_ID')) {
