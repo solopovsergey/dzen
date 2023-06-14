@@ -1,0 +1,44 @@
+
+### auth
+// @no-cookie-jar
+// @no-log
+GET https://localhost/bitrix/admin/1c_exchange.php?type=catalog&mode=checkauth
+Authorization: Basic 1cobmen 1cobmenPassword
+
+> {%
+// client.log(JSON.stringify(response));
+
+var rows = response.body.split(/\n/);
+client.test('Авторизация', function(){
+    client.assert(rows[0] === 'success', "Авторизация не прошла");
+});
+
+if(rows[0] === 'success')
+{
+    client.global.set("1C_REQUEST_COOKIE_PHP_SESSID", rows[2]);
+    client.global.set("1C_REQUEST_SESSID_VARIABLE", rows[3].split('=').pop());
+}
+%}
+
+### init
+// @no-log
+GET https://localhost/bitrix/admin/1c_exchange.php?type=catalog&mode=init&sessid={{1C_REQUEST_SESSID_VARIABLE}}&version=3.1
+Cookie: PHPSESSID={{1C_REQUEST_COOKIE_PHP_SESSID}}
+
+
+### file
+// @no-log
+POST https://localhost/bitrix/admin/1c_exchange.php?type=catalog&mode=file&filename=pack.zip&sessid={{1C_REQUEST_SESSID_VARIABLE}}
+Cookie: PHPSESSID={{1C_REQUEST_COOKIE_PHP_SESSID}}
+
+< /home/i/.config/JetBrains/PhpStorm2022.2/scratches/check_pack/rests.zip
+
+
+
+### import
+// @no-log
+POST https://localhost/bitrix/admin/1c_exchange.php?type=catalog&mode=import&filename=rests.xml&sessid={{1C_REQUEST_SESSID_VARIABLE}}
+Cookie: PHPSESSID={{1C_REQUEST_COOKIE_PHP_SESSID}}
+
+###
+
